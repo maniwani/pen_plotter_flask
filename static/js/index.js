@@ -1,13 +1,9 @@
 // static/js/index.js
 
-const socket = new WebSocket('ws://' + location.host + '/ws');
-socket.addEventListener('message', ev => {
-    console.log('<<< ' + ev.data, 'blue');
+const socket = new WebSocket("ws://" + location.host);
+socket.addEventListener("message", event => {
+    console.log("<<< " + event.data, "blue");
 });
-
-// socket.addEventListener('open', function (event) {
-//     socket.send('Hello Server!');
-// });
 
 function send(content, mimeType) {
     const blob = new Blob([content], { type: mimeType })
