@@ -1062,7 +1062,10 @@ class App {
                 this.toolStart = Vec2.ZERO
                 break
             case Tool.Draw:
-                this.finish()
+                if (this.toolActive)
+                {
+                    this.finish()
+                }
                 break
         }
 
