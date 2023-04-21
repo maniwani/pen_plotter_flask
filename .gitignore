@@ -134,3 +134,6 @@ dmypy.json
 # Vagrant
 Vagrantfile
 .vagrant/
+
+# Static Assets
+static/assets/

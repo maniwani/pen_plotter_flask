@@ -4,7 +4,7 @@
     display: grid;
     grid-template-columns: 50px 1fr 50px;
     grid-template-rows: 25px 1fr 25px;
-    gap: 10px 10px;
+    gap: 20px 10px;
     grid-template-areas:
         ". . ."
         ". . ."
@@ -16,10 +16,12 @@
     height: 100vh;
     border: 1px solid #000000;
     grid-column: 2 / 3;
-
     display: flex;
     justify-content: center;
     align-items: center;
+    background-size: cover;
+    padding-bottom: 0;
+    margin-bottom: 0;
 }
 
 #canvas {
@@ -27,6 +29,7 @@
     aspect-ratio: 0.70710678118;
     cursor: crosshair;
     border: 1px solid red;
+    background-color: white;
     z-index: 2;
 }
 
@@ -44,4 +47,13 @@
     display: flex;
     flex-direction: column;
     gap: 5px;
+}
+
+img.star {
+    width: 50px;
+}
+
+img.star-reversed {
+    width: 50px;
+    transform: scaleX(-1);
 }

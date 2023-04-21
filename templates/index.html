@@ -1,22 +1,38 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div id="drawing">
-    <div id="pane">
-        <canvas id="canvas"></canvas>
+<section class="section">
+    <div id="drawing">
+        <div id="pane" class="box" style="background-image: url({{ url_for('static', filename='assets/OKE_Gen_2_Stars_Pattern.png') }});">
+            <canvas id="canvas"></canvas>
+        </div>
+        <div id="tools">
+            <button id="home" class="button is-dark"><span class="icon is-small"><i class="fas fa-home"></i></span></button>
+            <button id="move" class="button is-dark"><span class="icon is-small"><i class="fas fa-up-down-left-right"></i></span></button>
+            <button id="rotate" class="button is-dark"><span class="icon is-small"><i class="fas fa-rotate"></i></span></button>
+            <button id="zoom" class="button is-dark"><span class="icon is-small"><i class="fas fa-magnifying-glass"></i></span></button>
+            <button id="draw" class="button is-dark"><span class="icon is-small"><i class="fas fa-pen"></i></span></button>
+        </div>
+        <div id="top">
+            <nav class="level" style="width: 100%;">
+                <div class="level-left">
+                    <div class="level-item">
+                        <button id="undo" class="button is-warning"><span class="icon is-small"><i class="fas fa-rotate-left"></i></span></button>
+                    </div>
+                    <div class="level-item">
+                        <button id="redo" class="button is-warning"><span class="icon is-small"><i class="fas fa-rotate-right"></i></span></button>
+                    </div>
+                </div>
+                <div class="level-item">
+                    <button id="submit" class="button is-success"><span class="icon is-small"><i class="fas fa-print"></i></span></button>
+                </div>
+                <div class="level-right">
+                    <div class="level-item">
+                        <button id="clear" class="button is-danger"><span class="icon is-small"><i class="fas fa-trash"></i></span></button>
+                    </div>
+                </div>
+            </div>
+        </nav>
     </div>
-    <div id="tools">
-        <button id="home">home</button>
-        <button id="move">move</button>
-        <button id="rotate">rotate</button>
-        <button id="zoom">zoom</button>
-        <button id="draw">draw</button>
-    </div>
-    <div id="top">
-        <button id="undo">undo</button>
-        <button id="redo">redo</button>
-        <button id="submit">submit</button>
-        <button id="clear">cancel</button>
-    </div>
-</div>
+</section>
 {% endblock %}

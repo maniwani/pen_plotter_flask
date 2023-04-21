@@ -14,37 +14,51 @@
 </head>
 
 <body>
-    <section class>
-
-        <div class>
-            <nav class="navbar">
-                <div class="container">
-                    <div class="navbar-menu">
-                        <div class="navbar-end">
-                            {% if not current_user.is_authenticated %}
-                            <a href="{{ url_for('user.login') }}" class="navbar-item">
-                                Login
-                            </a>
-                            {% endif %}
-                            {% if current_user.is_authenticated %}
-                            <a href="{{ url_for('user.logout') }}" class="navbar-item">
-                                Logout
-                            </a>
-                            {% endif %}
-                        </div>
+    <section class="section">
+        <div class="container is-max-widescreen">
+            <nav class="level" style="background-color: white;">
+                <div class="level-left">
+                    <div class="level-item">
+                        <a href="https://offkaiexpo.com">
+                            <img src="{{ url_for('static', filename='assets/OKE_Stacked_Logo.svg') }}" width="150px">
+                        </a>
                     </div>
+                </div>
+                <div class="level-item">
+                    <img src="{{ url_for('static', filename='assets/stars/chonky boy teal.png') }}" class="star">
+                </div>
+                <div class="level-item">
+                    <img src="{{ url_for('static', filename='assets/stars/chonky boy green.png') }}" class="star-reversed">
+                </div>
+                <div class="level-item">
+                    <img src="{{ url_for('static', filename='assets/stars/chonky boy yellow.png') }}" class="star">
+                </div>
+                <div class="level-item">
+                    <img src="{{ url_for('static', filename='assets/stars/chonky boy orange.png') }}" class="star-reversed">
+                </div>
+                <div class="level-item">
+                    <img src="{{ url_for('static', filename='assets/stars/chonky boy supa red.png') }}" class="star">
+                </div>
+                <div class="level-right">
+                    {% if not current_user.is_authenticated %}
+                    <form action="/login/discord" method="POST">
+                        <button class="button" style="background-color: #5865F2">
+                            <i class="fa-brands fa-discord" style="color: #FFFFFF;"></i>
+                            <span style="color: #FFFFFF">Login with Discord</span>
+                        </button>
+                    </form>
+                    {% endif %}
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('user.logout') }}" class="navbar-item">
+                        Logout
+                    </a>
+                    {% endif %}
                 </div>
             </nav>
         </div>
-
-        <div>
-            <div class="has-text-centered">
-                {% block content %}
-                {% endblock %}
-            </div>
-        </div>
-
     </section>
+    {% block content %}
+    {% endblock %}
 </body>
 
 </html>
