@@ -820,6 +820,7 @@ class App {
         let pane = document.getElementById("pane")
         let canvas = document.getElementById("canvas")
         let context = canvas.getContext("2d")
+        let backgroundTemplate = document.getElementById("template-upload")
 
         // make canvas pixel buffer match its on-screen dimensions
         resizeCanvasToDisplaySize(canvas)
@@ -832,6 +833,7 @@ class App {
         this.pane = pane
         this.canvas = canvas
         this.context = context
+        this.backgroundTemplate = backgroundTemplate
         this.transform = new DOMMatrix()
 
         this.tool = Tool.Draw
@@ -913,6 +915,10 @@ class App {
     redraw() {
         this.syncTransform()
         this.clearCanvas()
+        if (this.backgroundTemplate !== undefined)
+        {
+            this.context.drawImage(this.backgroundTemplate, 0, 0, this.canvas.width, this.canvas.height)
+        }
         for (let stroke of this.strokes.undoStrokes) {
             stroke.draw(this.context)
         }

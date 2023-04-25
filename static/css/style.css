@@ -57,3 +57,7 @@ img.star-reversed {
     width: 50px;
     transform: scaleX(-1);
 }
+
+img.template-preview {
+    height: 200px;
+}
