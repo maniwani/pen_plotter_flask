@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+<script src="{{ url_for('static', filename='js/buttons.js') }}" type="module"></script>
 <section class="section">
     <div id="drawing">
         <div id="pane" class="box" style="background-image: url({{ url_for('static', filename='assets/OKE_Gen_2_Stars_Pattern.png') }});">
@@ -23,16 +24,50 @@
                         <button id="redo" class="button is-warning"><span class="icon is-small"><i class="fas fa-rotate-right"></i></span></button>
                     </div>
                 </div>
-                <div class="level-item">
-                    <button id="submit" class="button is-success"><span class="icon is-small"><i class="fas fa-print"></i></span></button>
-                </div>
                 <div class="level-right">
                     <div class="level-item">
-                        <button id="clear" class="button is-danger"><span class="icon is-small"><i class="fas fa-trash"></i></span></button>
+                        <button class="button is-success js-modal-trigger" data-target="confirm-submit-modal">
+                            <span class="icon is-small"><i class="fas fa-print"></i></span><span>Print</span>
+                        </button>
+                    </div>
+                    <div class="level-item">
+                        <span></span>
+                    </div>
+                    <div class="level-item">
+                        <button class="button is-danger js-modal-trigger" data-target="confirm-clear-modal">
+                            <span class="icon is-small"><i class="fas fa-trash"></i></span><span>Clear</span>
+                        </button>
                     </div>
                 </div>
             </div>
         </nav>
     </div>
 </section>
+
+<div id="confirm-submit-modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <div class="block"><p>Are you sure you want to <b style="color: #48c78e;">PRINT</b>?</p></div>
+            <div class="block">
+                <button id="submit" class="button is-success">PEN ROBOT GO BRRRRRR</button>
+                <button id="cancel-submit" class="button is-warning">I can fix him</button>
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+</div>
+<div id="confirm-clear-modal" class="modal">
+    <div class="modal-background"></div>
+    <div class="modal-content">
+        <div class="box">
+            <div class="block"><p>Are you sure you want to <b style="color: #f14668;">CLEAR</b>?</p></div>
+            <div class="block">
+                <button id="clear" class="button is-danger">F** ME UP FAM</button>
+                <button id="cancel-clear" class="button is-warning">I can fix him</button>
+            </div>
+        </div>
+    </div>
+    <button class="modal-close is-large" aria-label="close"></button>
+</div>
 {% endblock %}
