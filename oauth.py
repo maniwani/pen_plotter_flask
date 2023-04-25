@@ -54,11 +54,6 @@ oauth.register(
 user = Blueprint("user", __name__)
 
 
-@user.route("/login")
-def login():
-    return render_template("login.html")
-
-
 @user.route("/login/discord", methods=["POST"])
 def login_discord():
     if current_user.is_authenticated:
@@ -73,6 +68,9 @@ def authorize_discord():
     if current_user.is_authenticated:
         return redirect("/")
 
+    if session.get("_flashes") is not None:
+        session["_flashes"].clear()
+
     try:
         oauth.discord.authorize_access_token()
         if is_staff() or is_guest():
@@ -80,11 +78,11 @@ def authorize_discord():
             login_user(user)
             user_info = oauth.discord.get(quote_plus("users/@me"))
             session["_discord_user"] = user_info.json()
-            flash("Success!")
+            flash("Success!", "success")
         else:
-            flash("Your account does not have permission to login.")
+            flash("Your account does not have permission to login.", "error")
     except:
-        flash("There was an error logging in.")
+        flash("There was an error logging in.", "error")
 
     return redirect("/")
 

@@ -1,5 +1,7 @@
 // static/js/index.js
 
+import { registerModalListeners } from "../js/modal.js"
+
 const socket = new WebSocket("ws://" + location.host);
 socket.addEventListener("message", event => {
     console.log("<<< " + event.data, "blue");
@@ -9,6 +11,8 @@ function send(content, mimeType) {
     const blob = new Blob([content], { type: mimeType })
     socket.send(blob)
 }
+
+// static/js/index.js
 
 function ease(x) {
     return 1 - Math.sqrt(1 - x * x)
@@ -843,6 +847,7 @@ class App {
         this.strokes = new BrushStrokeStore()
 
         this.addEventListeners()
+        registerModalListeners()
 
         window.requestAnimationFrame(() => this.redraw())
     }
@@ -861,34 +866,61 @@ class App {
 
         canvas.addEventListener("wheel", this.wheelEventHandler)
 
-        document
-            .getElementById("home")
-            .addEventListener("click", this.homeEventHandler)
-        document
-            .getElementById("move")
-            .addEventListener("click", () => this.changeTool(Tool.Move))
-        document
-            .getElementById("rotate")
-            .addEventListener("click", () => this.changeTool(Tool.Rotate))
-        document
-            .getElementById("zoom")
-            .addEventListener("click", () => this.changeTool(Tool.Zoom))
-        document
-            .getElementById("draw")
-            .addEventListener("click", () => this.changeTool(Tool.Draw))
+        let homeButton = document.getElementById("home")
+        homeButton.addEventListener("click", this.homeEventHandler)
+        homeButton.addEventListener("click", () => {
+            homeButton.blur()
+        })
 
-        document
-            .getElementById("clear")
-            .addEventListener("click", this.clearEventHandler)
-        document
-            .getElementById("undo")
-            .addEventListener("click", this.undoEventHandler)
-        document
-            .getElementById("redo")
-            .addEventListener("click", this.redoEventHandler)
-        document
-            .getElementById("submit")
-            .addEventListener("click", this.downloadEventHandler)
+        let moveButton = document.getElementById("move")
+        moveButton.addEventListener("click", () => this.changeTool(Tool.Move))
+        moveButton.addEventListener("click", () => {
+            moveButton.blur()
+        })
+
+        let rotateButton = document.getElementById("rotate")
+        rotateButton.addEventListener("click", () => this.changeTool(Tool.Rotate))
+        rotateButton.addEventListener("click", () => {
+            rotateButton.blur()
+        })
+
+        let zoomButton = document.getElementById("zoom")
+        zoomButton.addEventListener("click", () => this.changeTool(Tool.Zoom))
+        zoomButton.addEventListener("click", () => {
+            zoomButton.blur()
+        })
+
+        let drawButton = document.getElementById("draw")
+        drawButton.addEventListener("click", () => this.changeTool(Tool.Draw))
+        drawButton.addEventListener("click", () => {
+            drawButton.blur()
+        })
+
+        let clearButton = document.getElementById("clear")
+        clearButton.addEventListener("click", this.clearEventHandler)
+        clearButton.addEventListener("click", () => {
+            clearButton.blur()
+        })
+
+        let undoButton = document.getElementById("undo")
+        undoButton.addEventListener("click", this.undoEventHandler)
+        undoButton.addEventListener("click", () => {
+            undoButton.blur()
+        })
+
+        let redoButton = document.getElementById("redo")
+        redoButton.addEventListener("click", this.redoEventHandler)
+        redoButton.addEventListener("click", () => {
+            redoButton.blur()
+        })
+
+        let printModalButton = document.getElementById("print-dialog")
+        printModalButton.addEventListener("click", () => {
+            redoButton.blur()
+        })
+
+        let printConfirmButton = document.getElementById("print-confirm")
+        printConfirmButton.addEventListener("click", this.downloadEventHandler)
     }
 
     clearCanvas() {
@@ -959,7 +991,7 @@ class App {
 
     syncTransform() {
         this.canvas.style.transform = this.transform.toString()
-        resizeCanvasToDisplaySize(this.canvas)
+        //resizeCanvasToDisplaySize(this.canvas)
     }
 
     homeEventHandler = () => {
@@ -1032,6 +1064,10 @@ class App {
     }
 
     toolUpEventHandler = () => {
+        if (!this.toolActive) {
+            return
+        }
+
         switch (this.tool) {
             case Tool.Move:
                 this.toolStart = Vec2.ZERO
@@ -1051,6 +1087,10 @@ class App {
     }
 
     cancelEventHandler = () => {
+        if (!this.toolActive) {
+            return
+        }
+
         switch (this.tool) {
             case Tool.Move:
                 this.toolStart = Vec2.ZERO
@@ -1070,10 +1110,6 @@ class App {
     }
 
     wheelEventHandler = e => {
-        if (!this.toolActive) {
-            return
-        }
-
         e.preventDefault()
 
         switch (this.tool) {
@@ -1081,6 +1117,7 @@ class App {
                 break
             case Tool.Rotate:
                 // TODO
+                // this.transform.rotateSelf(Math.sign(e.deltaY) * 15)
                 break
             case Tool.Zoom:
                 // TODO

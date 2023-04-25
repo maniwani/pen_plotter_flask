@@ -1,22 +1,168 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div id="drawing">
-    <div id="pane">
-        <canvas id="canvas"></canvas>
+<section class>
+    <div id="grid">
+        <div id="corner-piece"></div>
+        <div id="toolbar">
+            <div id="toolbar-section-1">
+                <button id="undo" class="button tbtn" title="Undo">
+                    <span class="icon">
+                        <i class="fas fa-arrow-left fa-fw"></i>
+                    </span>
+                </button>
+                <button id="redo" class="button tbtn" title="Redo">
+                    <span class="icon">
+                        <i class="fas fa-arrow-right fa-fw"></i>
+                    </span>
+                </button>
+            </div>
+            <div id="toolbar-section-2">
+                <div>
+                    <button id="print-dialog" class="button js-modal-trigger" data-target="print-modal" title="Plot">
+                        <span class="icon">
+                            <i class="fas fa-print fa-fw"></i>
+                        </span>
+                        <span>Print</span>
+                    </button>
+                </div>
+                <div>
+                    <button id="clear" class="button" title="Clear">
+                        <span class="icon">
+                            <i class="fa-solid fa-trash fa-fw"></i>
+                        </span>
+                        <span>Clear</span>
+                    </button>
+                </div>
+            </div>
+            <div id="toolbar-section-3">
+                <div class="dropdown is-right is-hoverable">
+                    <div class="dropdown-trigger">
+                        <button class="button" aria-haspopup="true" aria-controls="toolbar-dropdown-menu">
+                            <span class="icon is-small">
+                                <i class="fa-solid fa-bars fa-fw"></i>
+                            </span>
+                            <span>Menu</span>
+                            <span class="icon is-small">
+                                <i class="fas fa-angle-down fa-fw" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu" id="toolbar-dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            {% with errors = get_flashed_messages(category_filter=["error"]) %}
+                            {% if errors %}
+                            <div class="dropdown-item">
+                                <div class="notification is-danger">
+                                    <span>
+                                        {{ errors[0] }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endwith %}
+                            {% with messages = get_flashed_messages(category_filter=["success"]) %}
+                            {% if messages %}
+                            <div class="dropdown-item">
+                                <div class="notification is-success">
+                                    <span>
+                                        {{ messages[0] }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endwith %}
+                            <a href="#" class="dropdown-item">
+                                TODO
+                            </a>
+                            <hr class="dropdown-divider">
+                            <div class="dropdown-item">
+                                {% if not current_user.is_authenticated %}
+                                <form action="/login/discord" method="POST">
+                                    <button class="button dropdown-item" style="background-color: #5865F2"
+                                        title="Login">
+                                        <span class="icon">
+                                            <i class="fa-brands fa-discord fa-fw" style="color: #FFFFFF;"></i>
+                                        </span>
+                                        <span style="color: #FFFFFF;">Login with Discord</span>
+                                    </button>
+                                </form>
+                                {% endif %}
+                                {% if current_user.is_authenticated %}
+                                <a href="{{ url_for('user.logout') }}">
+                                    <button class="button dropdown-item" style="background-color: #6e6e6e"
+                                        title="Logout">
+                                        <span class="icon">
+                                            <i class="fa-solid fa-arrow-right-from-bracket fa-fw"
+                                                style="color: #FFFFFF;"></i>
+                                        </span>
+                                        <span style="color: #FFFFFF;">Logout</span>
+                                    </button>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="sidebar">
+            <button id="draw" class="button tbtn" title="Pen">
+                <span class="icon">
+                    <i class="fas fa-pen fa-fw"></i>
+                </span>
+            </button>
+            <button id="home" class="button tbtn" title="Page Home">
+                <span class="icon">
+                    <i class="fas fa-home fa-fw"></i>
+                </span>
+            </button>
+            <button id="move" class="button tbtn" title="Page Move">
+                <span class="icon">
+                    <i class="fas fa-arrows fa-fw"></i>
+                </span>
+            </button>
+            <button id="rotate" class="button tbtn" title="Page Rotate">
+                <span class="icon">
+                    <i class="fas fa-sync-alt fa-fw"></i>
+                </span>
+            </button>
+            <button id="zoom" class="button tbtn" title="Page Zoom">
+                <span class="icon">
+                    <i class="fas fa-search fa-fw"></i>
+                </span>
+            </button>
+        </div>
+
+        <div id="background">
+        </div>
+
+        <div id="window">
+            <canvas id="canvas"></canvas>
+        </div>
+
+        <div id="watermark">
+            <img src="/static/images/oke_gen2_logo_horizontal.png" />
+        </div>
+
+        <div id="print-modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Confirm</p>
+                    <button class="delete" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body">
+                    Do really you want me to draw this?
+                </section>
+                <footer class="modal-card-foot">
+                    <button id="print-confirm" class="button is-success">DO IT, ROBOT.</button>
+                    <button id="print-cancel" class="button">Cancel</button>
+                </footer>
+            </div>
+        </div>
+
     </div>
-    <div id="tools">
-        <button id="home">home</button>
-        <button id="move">move</button>
-        <button id="rotate">rotate</button>
-        <button id="zoom">zoom</button>
-        <button id="draw">draw</button>
-    </div>
-    <div id="top">
-        <button id="undo">undo</button>
-        <button id="redo">redo</button>
-        <button id="submit">submit</button>
-        <button id="clear">cancel</button>
-    </div>
-</div>
+</section>
 {% endblock %}

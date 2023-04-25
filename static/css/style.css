@@ -1,47 +1,125 @@
-#drawing {
-    width: 100%;
-    height: 100%;
-    display: grid;
-    grid-template-columns: 50px 1fr 50px;
-    grid-template-rows: 25px 1fr 25px;
-    gap: 10px 10px;
-    grid-template-areas:
-        ". . ."
-        ". . ."
-        ". . .";
+html,
+body {
+    overflow: hidden;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
-#pane {
-    width: 100%;
-    height: 100vh;
-    border: 1px solid #000000;
-    grid-column: 2 / 3;
+::-webkit-scrollbar {
+    display: none;
+}
 
+#grid {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-rows: 40px 1fr 40px 40px;
+    grid-template-columns: 40px 1fr 225px 40px;
+    grid-template-areas:
+        "corner toolbar toolbar toolbar"
+        "sidebar window window window"
+        "sidebar window window window"
+        "sidebar window window window";
+}
+
+#corner-piece {
+    grid-area: corner;
+    background: #f0f0f0;
+    z-index: 5;
+}
+
+#toolbar {
+    grid-area: toolbar;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 1fr 1fr 1fr;
+    place-items: center;
+
+    line-height: 40px;
+    background: #f0f0f0;
+    box-shadow: 0px 1px 2px #c0c0c0;
+    z-index: 4;
+}
+
+#toolbar-section-1 {
+    grid-column: 1 / 2;
+    justify-self: start;
+    display: flex;
+    flex-direction: row;
+}
+
+#toolbar-section-2 {
+    grid-column: 2 / 3;
+    justify-self: center;
+    display: flex;
+    flex-direction: row;
+}
+
+#toolbar-section-3 {
+    grid-column: 3 / 4;
+    justify-self: end;
+    display: flex;
+    flex-direction: row;
+}
+
+#sidebar {
+    grid-area: sidebar;
+    display: flex;
+    flex-direction: column;
+    justify-content: top;
+    align-items: center;
+
+    line-height: 40px;
+    background: #f0f0f0;
+    box-shadow: 1px 0px 2px #c0c0c0;
+    z-index: 3;
+}
+
+#background {
+    grid-area: window;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-color: #484848;
+    background-image: url("/static/images/oke_gen2_stars_pattern_transparent.png");
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
-#canvas {
-    height: 90%;
-    aspect-ratio: 0.70710678118;
-    cursor: crosshair;
-    border: 1px solid red;
+#watermark {
+    grid-row: 3 / 4;
+    grid-column: 3 / 4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+#window {
+    grid-area: window;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     z-index: 2;
 }
 
-#top {
-    grid-column: 2 / 3;
-    grid-row: 1 / 2;
-    display: flex;
-    flex-direction: row;
-    gap: 5px;
+#canvas {
+    height: 95%;
+    aspect-ratio: 0.70710678118;
+    cursor: crosshair;
+    background: #ffffff;
+    z-index: 3;
 }
 
-#tools {
-    grid-column: 1 / 2;
-    grid-row: 2 / 3;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+.tbtn {
+    /*   position: relative;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: rgba(255, 255, 255, 0); */
+}
+
+.tbtn:is(:hover, :focus, :active) {
+    /*   background: rgba(255, 255, 255, 0.7);
+    filter: invert(100%);
+    -webkit-filter: invert(100%); */
 }
