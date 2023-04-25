@@ -8,12 +8,20 @@
             <canvas id="canvas"></canvas>
         </div>
         <div id="tools">
-            <button id="home" class="button is-dark"><span class="icon is-small"><i class="fas fa-home"></i></span></button>
-            <button id="move" class="button is-dark"><span class="icon is-small"><i class="fas fa-up-down-left-right"></i></span></button>
-            <button id="rotate" class="button is-dark"><span class="icon is-small"><i class="fas fa-rotate"></i></span></button>
-            <button id="zoom" class="button is-dark"><span class="icon is-small"><i class="fas fa-magnifying-glass"></i></span></button>
-            <button id="draw" class="button is-dark"><span class="icon is-small"><i class="fas fa-pen"></i></span></button>
-            <button id="template" class="button is-dark"></button>
+            <button id="home" title="Home" class="button is-dark"><span class="icon is-small"><i class="fas fa-home"></i></span></button>
+            <button id="move" title="Move" class="button is-dark"><span class="icon is-small"><i class="fas fa-up-down-left-right"></i></span></button>
+            <button id="rotate" title="Rotate" class="button is-dark"><span class="icon is-small"><i class="fas fa-rotate"></i></span></button>
+            <button id="zoom" title="Zoom" class="button is-dark"><span class="icon is-small"><i class="fas fa-magnifying-glass"></i></span></button>
+            <button id="draw" title="Draw" class="button is-dark"><span class="icon is-small"><i class="fas fa-pen"></i></span></button>
+            <button id="color-black" class="button is-info"><span class="icon">
+                <i class="fas fa-circle" style="color: #111111;"></i>
+            </span></button>
+            <button id="color-silver" class="button is-info"><span class="icon">
+                <i class="fas fa-circle" style="color: #bebcbf;"></i>
+            </span></button>
+            <button id="color-gold" class="button is-info"><span class="icon">
+                <i class="fas fa-circle" style="color: #b89865;"></i>
+            </span></button>
         </div>
         <div id="top">
             <nav class="level" style="width: 100%;">
@@ -26,6 +34,24 @@
                     </div>
                 </div>
                 <div class="level-right">
+                    <div class="level-item">
+                        <div class="file is-normal">
+                            <label class="file-label">
+                                <input id="background-input" class="file-input" type="file" accept="image/*" name="template" onchange="loadBackground(event)">
+                                <span class="file-cta">
+                                    <span class="file-icon">
+                                        <i class="fa fa-file-import"></i>
+                                    </span>
+                                    <span class="file-label">
+                                        Load Background
+                                    </span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="level-item">
+                        <span></span>
+                    </div>
                     <div class="level-item">
                         <button class="button is-success js-modal-trigger" data-target="confirm-submit-modal">
                             <span class="icon is-small"><i class="fas fa-print"></i></span><span>Print</span>
@@ -44,18 +70,14 @@
         </nav>
     </div>
 </section>
-<section class="section">
-    <p><input type="file" accept="image/*" name="image" id="file" onchange="renderTemplatePreview(event)" style="display: none;"></p>
-    <p><label for="file" style="cursor: pointer;">Upload Template</label></p>
-    <p><img id="template-upload" class="template-preview" /></p>
 
-    <script>
-    var renderTemplatePreview = function(event) {
-        var image = document.getElementById("template-upload");
+<img id="background-upload" hidden="true" />
+<script>
+    var loadBackground = function(event) {
+        var image = document.getElementById("background-upload");
         image.src = URL.createObjectURL(event.target.files[0]);
     };
-    </script>
-</section>
+</script>
 
 <div id="confirm-submit-modal" class="modal">
     <div class="modal-background"></div>

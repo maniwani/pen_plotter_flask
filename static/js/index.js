@@ -820,7 +820,7 @@ class App {
         let pane = document.getElementById("pane")
         let canvas = document.getElementById("canvas")
         let context = canvas.getContext("2d")
-        let backgroundTemplate = document.getElementById("template-upload")
+        let background = document.getElementById("background-upload")
 
         // make canvas pixel buffer match its on-screen dimensions
         resizeCanvasToDisplaySize(canvas)
@@ -833,7 +833,7 @@ class App {
         this.pane = pane
         this.canvas = canvas
         this.context = context
-        this.backgroundTemplate = backgroundTemplate
+        this.background = background
         this.transform = new DOMMatrix()
 
         this.tool = Tool.Draw
@@ -910,14 +910,20 @@ class App {
         this.brush = new Brush({ smoothingFunction: new KritaSmoothing(10) })
         this.stroke = new BrushStroke()
         this.strokes = new BrushStrokeStore()
+        this.clearBackground()
+    }
+
+    clearBackground() {
+        document.getElementById("background-input").value = '';
+        this.background.removeAttribute("src");
     }
 
     redraw() {
         this.syncTransform()
         this.clearCanvas()
-        if (this.backgroundTemplate !== undefined)
+        if (this.background.src !== undefined)
         {
-            this.context.drawImage(this.backgroundTemplate, 0, 0, this.canvas.width, this.canvas.height)
+            this.context.drawImage(this.background, 0, 0, this.canvas.width, this.canvas.height)
         }
         for (let stroke of this.strokes.undoStrokes) {
             stroke.draw(this.context)
