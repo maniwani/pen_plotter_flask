@@ -1,18 +1,4 @@
-// static/js/index.js
-
 import { registerModalListeners } from "../js/modal.js"
-
-const socket = new WebSocket("ws://" + location.host);
-socket.addEventListener("message", event => {
-    console.log("<<< " + event.data, "blue");
-});
-
-function send(content, mimeType) {
-    const blob = new Blob([content], { type: mimeType })
-    socket.send(blob)
-}
-
-// static/js/index.js
 
 function ease(x) {
     return 1 - Math.sqrt(1 - x * x)
@@ -799,6 +785,10 @@ var Tool
         Tool[(Tool["Draw"] = 3)] = "Draw"
     })(Tool || (Tool = {}))
 
+function connect() {
+    return new WebSocket("ws://" + location.host)
+}
+
 class App {
     constructor() {
         // // B6 is 125mm x 176mm
@@ -837,6 +827,10 @@ class App {
         this.canvas = canvas
         this.context = context
         this.transform = new DOMMatrix()
+        this.socket = io.connect();
+        this.socket.on("connect", () => {
+            this.socket.emit("join", { "room": "guests" })
+        });
 
         this.tool = Tool.Draw
         this.toolActive = false
@@ -915,12 +909,16 @@ class App {
         })
 
         let printModalButton = document.getElementById("print-dialog")
-        printModalButton.addEventListener("click", () => {
-            redoButton.blur()
-        })
+        if (printModalButton !== null) {
+            printModalButton.addEventListener("click", () => {
+                redoButton.blur()
+            })
+        }
 
         let printConfirmButton = document.getElementById("print-confirm")
-        printConfirmButton.addEventListener("click", this.downloadEventHandler)
+        if (printConfirmButton !== null) {
+            printConfirmButton.addEventListener("click", this.downloadEventHandler)
+        }
     }
 
     clearCanvas() {
@@ -979,10 +977,8 @@ class App {
             6.9
         )
         let serializer = new XMLSerializer()
-        let svgString = serializer.serializeToString(svg)
-        //console.log(svgString)
-        //download(svgString, "image/svg+xml;charset=utf-8", "autograph.svg")
-        send(svgString, "image/svg+xml;charset=utf-8")
+        let content = serializer.serializeToString(svg)
+        this.socket.emit("plot", { "svg": content })
     }
 
     changeTool(tool) {
@@ -1117,7 +1113,6 @@ class App {
                 break
             case Tool.Rotate:
                 // TODO
-                // this.transform.rotateSelf(Math.sign(e.deltaY) * 15)
                 break
             case Tool.Zoom:
                 // TODO

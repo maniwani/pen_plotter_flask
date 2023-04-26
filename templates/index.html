@@ -19,12 +19,21 @@
             </div>
             <div id="toolbar-section-2">
                 <div>
+                    {% if not current_user.is_authenticated %}
+                    <button id="print-dialog-disabled" class="button is-static" title="Plot" disabled>
+                        <span class="icon">
+                            <i class="fas fa-print fa-fw"></i>
+                        </span>
+                        <span>Print</span>
+                    </button>
+                    {% else %}
                     <button id="print-dialog" class="button js-modal-trigger" data-target="print-modal" title="Plot">
                         <span class="icon">
                             <i class="fas fa-print fa-fw"></i>
                         </span>
                         <span>Print</span>
                     </button>
+                    {% endif %}
                 </div>
                 <div>
                     <button id="clear" class="button" title="Clear">
@@ -72,9 +81,7 @@
                             </div>
                             {% endif %}
                             {% endwith %}
-                            <a href="#" class="dropdown-item">
-                                TODO
-                            </a>
+                            <a href="#" class="dropdown-item"></a>
                             <hr class="dropdown-divider">
                             <div class="dropdown-item">
                                 {% if not current_user.is_authenticated %}
@@ -87,8 +94,7 @@
                                         <span style="color: #FFFFFF;">Login with Discord</span>
                                     </button>
                                 </form>
-                                {% endif %}
-                                {% if current_user.is_authenticated %}
+                                {% else %}
                                 <a href="{{ url_for('user.logout') }}">
                                     <button class="button dropdown-item" style="background-color: #6e6e6e"
                                         title="Logout">

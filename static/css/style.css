@@ -14,7 +14,7 @@ body {
     height: 100vh;
     display: grid;
     grid-template-rows: 40px 1fr 40px 40px;
-    grid-template-columns: 40px 1fr 225px 40px;
+    grid-template-columns: 40px 1fr 300px 40px;
     grid-template-areas:
         "corner toolbar toolbar toolbar"
         "sidebar window window window"
@@ -72,7 +72,7 @@ body {
     line-height: 40px;
     background: #f0f0f0;
     box-shadow: 1px 0px 2px #c0c0c0;
-    z-index: 3;
+    z-index: 4;
 }
 
 #background {
