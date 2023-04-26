@@ -1,15 +1,12 @@
-from functools import wraps
-from os import environ
+import os
 import uuid
 from urllib.parse import quote_plus
 
 from authlib.integrations.flask_client import OAuth
 from flask import (
     Blueprint,
-    abort,
     flash,
     redirect,
-    render_template,
     url_for,
     session,
 )
@@ -20,6 +17,7 @@ from flask_login import (
     current_user,
 )
 
+from config import *
 from models import User
 
 DISCORD_API_BASE_URL = "https://discord.com/api/"
@@ -27,8 +25,8 @@ DISCORD_API_AUTHORIZE_URL = "https://discord.com/oauth2/authorize"
 DISCORD_API_ACCESS_TOKEN_URL = "https://discord.com/api/oauth2/token"
 DISCORD_API_REVOKE_TOKEN_URL = "https://discord.com/api/oauth2/token/revoke"
 
-DISCORD_CLIENT_ID = environ.get("DISCORD_CLIENT_ID")
-DISCORD_CLIENT_SECRET = environ.get("DISCORD_CLIENT_SECRET")
+DISCORD_CLIENT_ID = os.environ.get("DISCORD_CLIENT_ID")
+DISCORD_CLIENT_SECRET = os.environ.get("DISCORD_CLIENT_SECRET")
 DISCORD_CLIENT_OAUTH2_SCOPES = "identify guilds.members.read"
 
 STAFF_SERVER_ID = "864267081255616542"
@@ -111,26 +109,3 @@ def has_server_role(server_id, role_id):
             if role == role_id:
                 return True
     return False
-
-
-def role_required(f, role: str):
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if current_user.role == role:
-            return f(*args, **kwargs)
-        else:
-            flash("You do not have the required permissions to view this page.")
-            return abort(403)
-
-    return wrap
-
-
-# def login_required(f):
-#     @wraps(f)
-#     def wrap(*args, **kwargs):
-#         if "session_id" in session:
-#             return f(*args, **kwargs)
-#         else:
-#             flash("Please login.")
-#             return redirect(url_for("login"))
-#     return wrap
