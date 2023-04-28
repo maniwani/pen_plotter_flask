@@ -28,7 +28,7 @@ jobs:
           DISCORD_CLIENT_SECRET: ${{ secrets.DISCORD_CLIENT_SECRET }}
         run: |
           echo "DISCORD_CLIENT_ID=$DISCORD_CLIENT_ID" >> .env
-          echo "DISCORD_CLIENT_ID=$DISCORD_CLIENT_SECRET" >> .env
+          echo "DISCORD_CLIENT_SECRET=$DISCORD_CLIENT_SECRET" >> .env
       -
         name: Build and push
         uses: docker/build-push-action@v4
