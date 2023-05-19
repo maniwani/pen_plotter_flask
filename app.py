@@ -7,6 +7,7 @@ import secrets
 from flask import Flask, render_template, request
 from flask_login import LoginManager, current_user
 from flask_socketio import SocketIO, disconnect, emit, join_room, leave_room
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from config import *
 from models import User
@@ -32,6 +33,7 @@ port = int(os.environ.get("PORT", 5000))
 
 # construct app
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_host=1)
 app.config["SECRET_KEY"] = secrets.token_urlsafe(16)
 app.register_blueprint(user)
 
