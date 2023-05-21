@@ -25,4 +25,4 @@ jobs:
           acrName: offkai
           containerAppName: plotter-dev
           resourceGroup: plotter
-          imageToBuild: offkai.azurecr.io/plotter:${{ github.sha }}
+          imageToBuild: offkai.azurecr.io/plotter-dev:${{ github.sha }}
