@@ -1,0 +1,44 @@
+name: Push to prod instances plotter*
+on: [workflow_dispatch]
+
+permissions:
+      id-token: write
+      contents: read
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID_PROD }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Build and deploy to plotter1
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          appSourcePath: ${{ github.workspace }}
+          acrName: offkai
+          containerAppName: plotter1
+          resourceGroup: plotter
+          imageToBuild: offkai.azurecr.io/plotter:${{ github.sha }}
+
+      - name: Deploy to plotter2
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          acrName: offkai
+          containerAppName: plotter2
+          resourceGroup: plotter
+          imageToDeploy: offkai.azurecr.io/plotter:${{ github.sha }}
+
+      - name: Deploy to plotter3
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          acrName: offkai
+          containerAppName: plotter3
+          resourceGroup: plotter
+          imageToDeploy: offkai.azurecr.io/plotter:${{ github.sha }}
