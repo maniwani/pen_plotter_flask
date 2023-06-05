@@ -864,71 +864,98 @@ class App {
 
         // sidebar
         let drawButton = document.getElementById("draw")
-        drawButton.addEventListener("click", () => this.changeTool(Tool.Draw))
-        drawButton.addEventListener("click", () => {
-            drawButton.blur()
-        })
+        if (drawButton) {
+            drawButton.addEventListener("click", () => this.changeTool(Tool.Draw))
+            drawButton.addEventListener("click", () => {
+                drawButton.blur()
+            })
+        }
 
         let blackButton = document.getElementById("set-color-black")
-        blackButton.addEventListener("click", () => this.setCanvasPenColor("#000000"))
-        blackButton.addEventListener("click", () => {
-            blackButton.blur()
-        })
+        if (blackButton) {
+            blackButton.addEventListener("click", () => this.setCanvasPenColor("#000000"))
+            blackButton.addEventListener("click", () => {
+                blackButton.blur()
+            })
+        }
 
         let silverButton = document.getElementById("set-color-silver")
-        silverButton.addEventListener("click", () => this.setCanvasPenColor("#bebcbf"))
-        silverButton.addEventListener("click", () => {
-            silverButton.blur()
-        })
+        if (silverButton) {
+            silverButton.addEventListener("click", () => this.setCanvasPenColor("#bebcbf"))
+            silverButton.addEventListener("click", () => {
+                silverButton.blur()
+            })
+        }
 
         let goldButton = document.getElementById("set-color-gold")
-        goldButton.addEventListener("click", () => this.setCanvasPenColor("#b89865"))
-        goldButton.addEventListener("click", () => {
-            goldButton.blur()
-        })
+        if (goldButton) {
+            goldButton.addEventListener("click", () => this.setCanvasPenColor("#b89865"))
+            goldButton.addEventListener("click", () => {
+                goldButton.blur()
+            })
+        }
 
         let homeButton = document.getElementById("home")
-        homeButton.addEventListener("click", this.homeEventHandler)
-        homeButton.addEventListener("click", () => {
-            homeButton.blur()
-        })
+        if (homeButton) {
+            homeButton.addEventListener("click", this.homeEventHandler)
+            homeButton.addEventListener("click", () => {
+                homeButton.blur()
+            })
+        }
 
         let moveButton = document.getElementById("move")
-        moveButton.addEventListener("click", () => this.changeTool(Tool.Move))
-        moveButton.addEventListener("click", () => {
-            moveButton.blur()
-        })
+        if (moveButton) {
+            moveButton.addEventListener("click", () => this.changeTool(Tool.Move))
+            moveButton.addEventListener("click", () => {
+                moveButton.blur()
+            })
+        }
 
         let rotateButton = document.getElementById("rotate")
-        rotateButton.addEventListener("click", () => this.changeTool(Tool.Rotate))
-        rotateButton.addEventListener("click", () => {
-            rotateButton.blur()
-        })
+        if (rotateButton) {
+            rotateButton.addEventListener("click", () => this.changeTool(Tool.Rotate))
+            rotateButton.addEventListener("click", () => {
+                rotateButton.blur()
+            })
+        }
 
         let zoomButton = document.getElementById("zoom")
-        zoomButton.addEventListener("click", () => this.changeTool(Tool.Zoom))
-        zoomButton.addEventListener("click", () => {
-            zoomButton.blur()
-        })
+        if (zoomButton) {
+            zoomButton.addEventListener("click", () => this.changeTool(Tool.Zoom))
+            zoomButton.addEventListener("click", () => {
+                zoomButton.blur()
+            })
+        }
 
         // topbar
         let undoButton = document.getElementById("undo")
-        undoButton.addEventListener("click", this.undoEventHandler)
-        undoButton.addEventListener("click", () => {
-            undoButton.blur()
-        })
+        if (undoButton) {
+            undoButton.addEventListener("click", this.undoEventHandler)
+            undoButton.addEventListener("click", () => {
+                undoButton.blur()
+            })
+        }
 
         let redoButton = document.getElementById("redo")
-        redoButton.addEventListener("click", this.redoEventHandler)
-        redoButton.addEventListener("click", () => {
-            redoButton.blur()
-        })
+        if (redoButton) {
+            redoButton.addEventListener("click", this.redoEventHandler)
+            redoButton.addEventListener("click", () => {
+                redoButton.blur()
+            })
+        }
 
         let clearButton = document.getElementById("clear")
-        clearButton.addEventListener("click", this.clearEventHandler)
-        clearButton.addEventListener("click", () => {
-            clearButton.blur()
-        })
+        if (clearButton) {
+            clearButton.addEventListener("click", this.clearEventHandler)
+            clearButton.addEventListener("click", () => {
+                clearButton.blur()
+            })
+        }
+
+        let downloadButton = document.getElementById("download")
+        if (downloadButton) {
+            downloadButton.addEventListener("click", this.downloadEventHandler)
+        }
 
         let printModalButton = document.getElementById("print-dialog")
         if (printModalButton) {
@@ -942,18 +969,12 @@ class App {
             printConfirmButton.addEventListener("click", this.printEventHandler)
         }
 
-        let downloadButton = document.getElementById("download-confirm")
-        if (downloadButton) {
-            downloadButton.addEventListener("click", this.downloadEventHandler)
-        }
-
         let backgroundUpload = document.getElementById("background-upload")
         let backgroundFileDrop = document.getElementById("background-file-drop")
 
         if (backgroundFileDrop && backgroundUpload) {
             backgroundUpload.addEventListener("change", (event) => {
                 this.setCanvasBackground(event.target.files[0])
-                event.target.dispatchEvent(new KeyboardEvent("keydown", { "keycode": "27" }));
             })
 
             backgroundFileDrop.addEventListener("click", () => {
@@ -973,8 +994,6 @@ class App {
                 if (files && files.length) {
                     this.setCanvasBackground(files[0])
                 }
-
-                event.target.dispatchEvent(new KeyboardEvent("keydown", { "keycode": "27" }));
             });
         }
 

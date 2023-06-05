@@ -61,14 +61,20 @@ def login_discord():
     return oauth.discord.authorize_redirect(redirect_url)
 
 
-@user.route("/login/backup", methods=["POST"])
+@user.route("/login/basic", methods=["POST"])
 def login_backup():
     if current_user.is_authenticated:
         return redirect("/")
 
     user = User(id=uuid.uuid4())
     login_user(user)
-    flash("Success!", "success")
+
+    if session.get("locale") == "ja":
+        msg = "ログインに成功しました！"
+    else:
+        msg = "Success!"
+
+    flash(msg, "success")
     return redirect("/")
 
 
@@ -80,6 +86,19 @@ def authorize_discord():
     if session.get("_flashes") is not None:
         session["_flashes"].clear()
 
+    if session.get("locale") == "ja":
+        msgs = [
+            "ログインに成功しました！",
+            "Discordアカウントには、ログインの権限がありません。",
+            "ログインにエラーが発生しました。",
+        ]
+    else:
+        msgs = [
+            "Success!",
+            "Your Discord account does not have permission to login.",
+            "There was an error logging in.",
+        ]
+
     try:
         oauth.discord.authorize_access_token()
         if is_staff() or is_guest():
@@ -87,11 +106,11 @@ def authorize_discord():
             login_user(user)
             user_info = oauth.discord.get(quote_plus("users/@me"))
             session["_discord_user"] = user_info.json()
-            flash("Success!", "success")
+            flash(msgs[0], "success")
         else:
-            flash("Your account does not have permission to login.", "error")
+            flash(msgs[1], "error")
     except:
-        flash("There was an error logging in.", "error")
+        flash(msgs[2], "error")
 
     return redirect("/")
 
