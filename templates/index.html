@@ -6,43 +6,41 @@
         <div id="corner-piece"></div>
         <div id="toolbar">
             <div id="toolbar-section-1">
+            </div>
+            <div id="toolbar-section-2">
                 <button id="undo" class="button tbtn" title="Undo">
                     <span class="icon">
                         <i class="fas fa-arrow-left fa-fw"></i>
                     </span>
+                    <span>Undo</span>
                 </button>
                 <button id="redo" class="button tbtn" title="Redo">
                     <span class="icon">
                         <i class="fas fa-arrow-right fa-fw"></i>
                     </span>
+                    <span>Redo</span>
                 </button>
-            </div>
-            <div id="toolbar-section-2">
-                <div>
-                    {% if not current_user.is_authenticated %}
-                    <button id="print-dialog-disabled" class="button is-static" title="Plot" disabled>
-                        <span class="icon">
-                            <i class="fas fa-print fa-fw"></i>
-                        </span>
-                        <span>Print</span>
-                    </button>
-                    {% else %}
-                    <button id="print-dialog" class="button js-modal-trigger" data-target="print-modal" title="Plot">
-                        <span class="icon">
-                            <i class="fas fa-print fa-fw"></i>
-                        </span>
-                        <span>Print</span>
-                    </button>
-                    {% endif %}
-                </div>
-                <div>
-                    <button id="clear" class="button" title="Clear">
-                        <span class="icon">
-                            <i class="fa-solid fa-trash fa-fw"></i>
-                        </span>
-                        <span>Clear</span>
-                    </button>
-                </div>
+                {% if not current_user.is_authenticated %}
+                <button id="print-dialog-disabled" class="button tbtn is-static" title="Plot" disabled>
+                    <span class="icon">
+                        <i class="fas fa-print fa-fw"></i>
+                    </span>
+                    <span>Print</span>
+                </button>
+                {% else %}
+                <button id="print-dialog" class="button tbtn js-modal-trigger" data-target="print-modal" title="Plot">
+                    <span class="icon">
+                        <i class="fas fa-print fa-fw"></i>
+                    </span>
+                    <span>Print</span>
+                </button>
+                {% endif %}
+                <button id="clear" class="button" title="Clear">
+                    <span class="icon">
+                        <i class="fa-solid fa-trash fa-fw"></i>
+                    </span>
+                    <span>Clear</span>
+                </button>
             </div>
             <div id="toolbar-section-3">
                 <div class="dropdown is-right is-hoverable">
@@ -59,6 +57,15 @@
                     </div>
                     <div class="dropdown-menu" id="toolbar-dropdown-menu" role="menu">
                         <div class="dropdown-content">
+                            <div class="dropdown-item">
+                                <button id="change-canvas" class="button dropdown-item js-modal-trigger"
+                                    data-target="background-upload-modal" title="Canvas Background">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-image fa-fw"></i>
+                                    </span>
+                                    <span>Canvas Background</span>
+                                </button>
+                            </div>
                             {% with errors = get_flashed_messages(category_filter=["error"]) %}
                             {% if errors %}
                             <div class="dropdown-item">
@@ -94,6 +101,16 @@
                                         <span style="color: #FFFFFF;">Login with Discord</span>
                                     </button>
                                 </form>
+                                <form action="/login/backup" method="POST">
+                                    <button class="button dropdown-item" style="background-color: #6e6e6e"
+                                        title="Login">
+                                        <span class="icon">
+                                            <i class="fa-solid fa-arrow-right-to-bracket fa-fw"
+                                                style="color: #FFFFFF;"></i>
+                                        </span>
+                                        <span style="color: #FFFFFF;">Login with Code</span>
+                                    </button>
+                                </form>
                                 {% else %}
                                 <a href="{{ url_for('user.logout') }}">
                                     <button class="button dropdown-item" style="background-color: #6e6e6e"
@@ -119,22 +136,37 @@
                     <i class="fas fa-pen fa-fw"></i>
                 </span>
             </button>
-            <button id="home" class="button tbtn" title="Page Home">
+            <button id="set-color-black" class="button tbtn" title="Black Pen">
+                <span class="icon">
+                    <i class="fas fa-circle" style="color: #000000;"></i>
+                </span>
+            </button>
+            <button id="set-color-silver" class="button tbtn" title="Silver Pen">
+                <span class="icon">
+                    <i class="fas fa-circle" style="color: #bebcbf;"></i>
+                </span>
+            </button>
+            <button id="set-color-gold" class="button tbtn" title="Gold Pen">
+                <span class="icon">
+                    <i class="fas fa-circle" style="color: #b89865;"></i>
+                </span>
+            </button>
+            <button id="home" class="button tbtn" title="Canvas Home">
                 <span class="icon">
                     <i class="fas fa-home fa-fw"></i>
                 </span>
             </button>
-            <button id="move" class="button tbtn" title="Page Move">
+            <button id="move" class="button tbtn" title="Canvas Move" disabled>
                 <span class="icon">
                     <i class="fas fa-arrows fa-fw"></i>
                 </span>
             </button>
-            <button id="rotate" class="button tbtn" title="Page Rotate">
+            <button id="rotate" class="button tbtn" title="Canvas Rotate" disabled>
                 <span class="icon">
                     <i class="fas fa-sync-alt fa-fw"></i>
                 </span>
             </button>
-            <button id="zoom" class="button tbtn" title="Page Zoom">
+            <button id="zoom" class="button tbtn" title="Canvas Zoom" disabled>
                 <span class="icon">
                     <i class="fas fa-search fa-fw"></i>
                 </span>
@@ -160,11 +192,40 @@
                     <button class="delete" aria-label="close"></button>
                 </header>
                 <section class="modal-card-body">
-                    Do really you want me to draw this?
+                    Plot this?
                 </section>
                 <footer class="modal-card-foot">
-                    <button id="print-confirm" class="button is-success">DO IT, ROBOT.</button>
-                    <button id="print-cancel" class="button">Cancel</button>
+                    <button id="print-confirm" class="button is-success">Yes</button>
+                    <button id="print-cancel" class="button">No</button>
+                    <button id="download-confirm" class="button is-info">Download</button>
+                </footer>
+            </div>
+        </div>
+
+
+        <div id="background-upload-modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Change Canvas Background</p>
+                    <button class="delete" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body">
+                    <div id="background-file-drop">
+                        <span class="icon">
+                            <i class="fa-solid fa-arrow-up-from-bracket fa-4x"></i>
+                        </span>
+                        <h4></h4>
+                        <span>
+                            <p>
+                                <b>Click to choose a file</b> or drag and drop one here.
+                            </p>
+                        </span>
+                        <input id="background-upload" class="file-input" type="file" accept="image/*" />
+                    </div>
+                </section>
+                <footer class="modal-card-foot">
+                    <button id="background-remove" class="button">Remove Background</button>
                 </footer>
             </div>
         </div>

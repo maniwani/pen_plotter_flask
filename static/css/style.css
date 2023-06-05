@@ -111,15 +111,30 @@ body {
     z-index: 3;
 }
 
-.tbtn {
-    /*   position: relative;
+#background-file-drop {
+    border: 2px dashed grey;
+    width: auto;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 15px;
+}
+
+#background-upload {
+    display: none;
+}
+
+/* .tbtn {
+    position: relative;
     cursor: pointer;
     transition: all 0.3s;
-    background: rgba(255, 255, 255, 0); */
+    background: rgba(255, 255, 255, 0);
 }
 
 .tbtn:is(:hover, :focus, :active) {
-    /*   background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.7);
     filter: invert(100%);
-    -webkit-filter: invert(100%); */
-}
+    -webkit-filter: invert(100%);
+} */

@@ -32,6 +32,8 @@ function download(content, mimeType, filename) {
     link.setAttribute("href", url)
     link.setAttribute("download", filename)
     link.click()
+    URL.revokeObjectURL(url);
+    link.remove();
 }
 
 function xmlDecode(input) {
@@ -591,8 +593,6 @@ class BrushStroke {
                     bez.p3.x,
                     bez.p3.y
                 )
-                //ctx.moveTo(bez.p1.x, bez.p1.y);
-                //ctx.lineTo(bez.p1.x, bez.p1.y);
             }
             ctx.stroke()
         }
@@ -716,6 +716,10 @@ class BrushStrokeStore {
         this.redoStrokes = []
     }
 
+    length() {
+        return this.undoStrokes.length
+    }
+
     addStroke(stroke) {
         // adding new points clears the redo buffer
         this.redoStrokes = []
@@ -785,10 +789,6 @@ var Tool
         Tool[(Tool["Draw"] = 3)] = "Draw"
     })(Tool || (Tool = {}))
 
-function connect() {
-    return new WebSocket("ws://" + location.host)
-}
-
 class App {
     constructor() {
         // // B6 is 125mm x 176mm
@@ -811,6 +811,11 @@ class App {
         // ctx.lineCap = 'round';
         // ctx.lineJoin = 'round';
 
+        this.socket = io.connect();
+        this.socket.on("connect", () => {
+            this.socket.emit("join", { "room": "guests" })
+        });
+
         let pane = document.getElementById("pane")
         let canvas = document.getElementById("canvas")
         let context = canvas.getContext("2d")
@@ -827,10 +832,7 @@ class App {
         this.canvas = canvas
         this.context = context
         this.transform = new DOMMatrix()
-        this.socket = io.connect();
-        this.socket.on("connect", () => {
-            this.socket.emit("join", { "room": "guests" })
-        });
+        this.background = new Image()
 
         this.tool = Tool.Draw
         this.toolActive = false
@@ -860,6 +862,31 @@ class App {
 
         canvas.addEventListener("wheel", this.wheelEventHandler)
 
+        // sidebar
+        let drawButton = document.getElementById("draw")
+        drawButton.addEventListener("click", () => this.changeTool(Tool.Draw))
+        drawButton.addEventListener("click", () => {
+            drawButton.blur()
+        })
+
+        let blackButton = document.getElementById("set-color-black")
+        blackButton.addEventListener("click", () => this.setCanvasPenColor("#000000"))
+        blackButton.addEventListener("click", () => {
+            blackButton.blur()
+        })
+
+        let silverButton = document.getElementById("set-color-silver")
+        silverButton.addEventListener("click", () => this.setCanvasPenColor("#bebcbf"))
+        silverButton.addEventListener("click", () => {
+            silverButton.blur()
+        })
+
+        let goldButton = document.getElementById("set-color-gold")
+        goldButton.addEventListener("click", () => this.setCanvasPenColor("#b89865"))
+        goldButton.addEventListener("click", () => {
+            goldButton.blur()
+        })
+
         let homeButton = document.getElementById("home")
         homeButton.addEventListener("click", this.homeEventHandler)
         homeButton.addEventListener("click", () => {
@@ -884,18 +911,7 @@ class App {
             zoomButton.blur()
         })
 
-        let drawButton = document.getElementById("draw")
-        drawButton.addEventListener("click", () => this.changeTool(Tool.Draw))
-        drawButton.addEventListener("click", () => {
-            drawButton.blur()
-        })
-
-        let clearButton = document.getElementById("clear")
-        clearButton.addEventListener("click", this.clearEventHandler)
-        clearButton.addEventListener("click", () => {
-            clearButton.blur()
-        })
-
+        // topbar
         let undoButton = document.getElementById("undo")
         undoButton.addEventListener("click", this.undoEventHandler)
         undoButton.addEventListener("click", () => {
@@ -908,17 +924,87 @@ class App {
             redoButton.blur()
         })
 
+        let clearButton = document.getElementById("clear")
+        clearButton.addEventListener("click", this.clearEventHandler)
+        clearButton.addEventListener("click", () => {
+            clearButton.blur()
+        })
+
         let printModalButton = document.getElementById("print-dialog")
-        if (printModalButton !== null) {
+        if (printModalButton) {
             printModalButton.addEventListener("click", () => {
                 redoButton.blur()
             })
         }
 
         let printConfirmButton = document.getElementById("print-confirm")
-        if (printConfirmButton !== null) {
-            printConfirmButton.addEventListener("click", this.downloadEventHandler)
+        if (printConfirmButton) {
+            printConfirmButton.addEventListener("click", this.printEventHandler)
         }
+
+        let downloadButton = document.getElementById("download-confirm")
+        if (downloadButton) {
+            downloadButton.addEventListener("click", this.downloadEventHandler)
+        }
+
+        let backgroundUpload = document.getElementById("background-upload")
+        let backgroundFileDrop = document.getElementById("background-file-drop")
+
+        if (backgroundFileDrop && backgroundUpload) {
+            backgroundUpload.addEventListener("change", (event) => {
+                this.setCanvasBackground(event.target.files[0])
+                event.target.dispatchEvent(new KeyboardEvent("keydown", { "keycode": "27" }));
+            })
+
+            backgroundFileDrop.addEventListener("click", () => {
+                backgroundUpload.click();
+            })
+
+            backgroundFileDrop.addEventListener("dragover", (event) => {
+                event.stopPropagation();
+                event.preventDefault();
+                event.dataTransfer.dropEffect = "copy"
+            });
+
+            backgroundFileDrop.addEventListener("drop", (event) => {
+                event.stopPropagation()
+                event.preventDefault()
+                let files = event.dataTransfer.files;
+                if (files && files.length) {
+                    this.setCanvasBackground(files[0])
+                }
+
+                event.target.dispatchEvent(new KeyboardEvent("keydown", { "keycode": "27" }));
+            });
+        }
+
+        let backgroundRemove = document.getElementById("background-remove")
+        if (backgroundRemove) {
+            backgroundRemove.addEventListener("click", () => {
+                this.clearCanvasBackground()
+            })
+        }
+    }
+
+    setCanvasBackground(file) {
+        if (!file || !file.type || !file.type.match("image.*")) {
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+            this.background.src = reader.result;
+        })
+
+        reader.readAsDataURL(file);
+    }
+
+    clearCanvasBackground() {
+        this.background.src = ""
+    }
+
+    setCanvasPenColor(color) {
+        this.context.strokeStyle = color;
     }
 
     clearCanvas() {
@@ -943,6 +1029,12 @@ class App {
     redraw() {
         this.syncTransform()
         this.clearCanvas()
+
+        if (this.background.src) {
+            drawImageProp(this.context, this.background)
+            // this.context.drawImage(this.background, 0, 0, this.canvas.width, this.canvas.height)
+        }
+
         for (let stroke of this.strokes.undoStrokes) {
             stroke.draw(this.context)
         }
@@ -969,16 +1061,41 @@ class App {
         this.strokes.redoStroke()
     }
 
-    downloadEventHandler = () => {
+    printEventHandler = () => {
+        if (!this.strokes.length()) {
+            return;
+        }
+
         let svg = this.strokes.getSVG(
             this.canvas.width,
             this.canvas.height,
             4.9,
             6.9
         )
+
         let serializer = new XMLSerializer()
         let content = serializer.serializeToString(svg)
         this.socket.emit("plot", { "svg": content })
+    }
+
+    downloadEventHandler = () => {
+        if (!this.strokes.length()) {
+            return;
+        }
+
+        let svg = this.strokes.getSVG(
+            this.canvas.width,
+            this.canvas.height,
+            4.9,
+            6.9
+        )
+
+        let serializer = new XMLSerializer()
+        let content = serializer.serializeToString(svg)
+
+        let date = new Date();
+        let filename = `autograph_${date.toISOString()}.svg`.replace(/:/g, "_")
+        download(content, "image/svg+xml;charset=utf-8", filename)
     }
 
     changeTool(tool) {
@@ -997,10 +1114,16 @@ class App {
     getPointFromEvent(e) {
         let mouseX = e.changedTouches ? e.changedTouches[0].pageX : e.pageX
         let mouseY = e.changedTouches ? e.changedTouches[0].pageY : e.pageY
-        mouseX -= this.canvas.offsetLeft
-        mouseY -= this.canvas.offsetTop
+        let x = mouseX - this.canvas.offsetLeft
+        let y = mouseY - this.canvas.offsetTop
 
-        let screenPoint = new Vec2(mouseX, mouseY)
+        // let mouseX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX
+        // let mouseY = e.changedTouches ? e.changedTouches[0].clientY : e.clientY
+        // let bounds = this.canvas.getBoundingClientRect()
+        // let x = mouseX - bounds.left
+        // let y = mouseY - bounds.top
+
+        let screenPoint = new Vec2(x, y)
         return this.screenToCanvas(screenPoint)
     }
 
@@ -1188,6 +1311,60 @@ function simplifyRDP(positions, threshold, relative) {
     }
 
     return keep
+}
+
+/**
+ * By Ken Fyrstenberg Nilsen
+ *
+ * drawImageProp(context, image [, x, y, width, height [,offsetX, offsetY]])
+ *
+ * If image and context are only arguments rectangle will equal canvas
+*/
+function drawImageProp(ctx, img, x, y, w, h, offsetX, offsetY) {
+    if (arguments.length === 2) {
+        x = y = 0;
+        w = ctx.canvas.width;
+        h = ctx.canvas.height;
+    }
+
+    // default offset is center
+    offsetX = typeof offsetX === "number" ? offsetX : 0.5;
+    offsetY = typeof offsetY === "number" ? offsetY : 0.5;
+
+    // keep bounds [0.0, 1.0]
+    if (offsetX < 0) offsetX = 0;
+    if (offsetY < 0) offsetY = 0;
+    if (offsetX > 1) offsetX = 1;
+    if (offsetY > 1) offsetY = 1;
+
+    var iw = img.width,
+        ih = img.height,
+        r = Math.min(w / iw, h / ih),
+        nw = iw * r,   // new prop. width
+        nh = ih * r,   // new prop. height
+        cx, cy, cw, ch, ar = 1;
+
+    // decide which gap to fill    
+    if (nw < w) ar = w / nw;
+    if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh;  // updated
+    nw *= ar;
+    nh *= ar;
+
+    // calc source rectangle
+    cw = iw / (nw / w);
+    ch = ih / (nh / h);
+
+    cx = (iw - cw) * offsetX;
+    cy = (ih - ch) * offsetY;
+
+    // make sure source rectangle is valid
+    if (cx < 0) cx = 0;
+    if (cy < 0) cy = 0;
+    if (cw > iw) cw = iw;
+    if (ch > ih) ch = ih;
+
+    // fill image in dest. rectangle
+    ctx.drawImage(img, cx, cy, cw, ch, x, y, w, h);
 }
 
 new App()

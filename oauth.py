@@ -61,6 +61,17 @@ def login_discord():
     return oauth.discord.authorize_redirect(redirect_url)
 
 
+@user.route("/login/backup", methods=["POST"])
+def login_backup():
+    if current_user.is_authenticated:
+        return redirect("/")
+
+    user = User(id=uuid.uuid4())
+    login_user(user)
+    flash("Success!", "success")
+    return redirect("/")
+
+
 @user.route("/authorize/discord")
 def authorize_discord():
     if current_user.is_authenticated:
@@ -89,7 +100,8 @@ def authorize_discord():
 @login_required
 def logout():
     logout_user()
-    session.pop("_discord_user")
+    if "_discord_user" in session:
+        session.pop("_discord_user")
     return redirect("/")
 
 
