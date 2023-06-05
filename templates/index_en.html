@@ -52,12 +52,16 @@
                     <div class="dropdown-menu" id="toolbar-dropdown-menu" role="menu">
                         <div class="dropdown-content">
                             <div class="dropdown-item">
-                                <button id="switch-lang-en" class="button dropdown-item">
-                                    <span>English</span>
-                                </button>
-                                <button id="switch-lang-jp" class="button dropdown-item">
-                                    <span>日本語</span>
-                                </button>
+                                <form action="/en" method="POST">
+                                    <button id="switch-lang-en" class="button dropdown-item">
+                                        <span>English</span>
+                                    </button>
+                                </form>
+                                <form action="/jp" method="POST">
+                                    <button id="switch-lang-jp" class="button dropdown-item">
+                                        <span>日本語</span>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
