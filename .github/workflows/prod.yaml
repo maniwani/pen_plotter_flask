@@ -42,3 +42,11 @@ jobs:
           containerAppName: plotter3
           resourceGroup: plotter
           imageToDeploy: offkai.azurecr.io/plotter:${{ github.sha }}
+
+      - name: Deploy to plotter4
+        uses: azure/container-apps-deploy-action@v1
+        with:
+          acrName: offkai
+          containerAppName: plotter4
+          resourceGroup: plotter
+          imageToDeploy: offkai.azurecr.io/plotter:${{ github.sha }}
