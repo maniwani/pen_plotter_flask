@@ -1150,11 +1150,14 @@ class App {
             return;
         }
 
+        let cardWidth = (this.orient == Orient.Portrait) ? 4.9 : 6.9;
+        let cardHeight = (this.orient == Orient.Portrait) ? 6.9 : 4.9;
+
         let svg = this.strokes.getSVG(
             this.canvas.width,
             this.canvas.height,
-            4.9,
-            6.9
+            cardWidth,
+            cardHeight
         )
 
         let serializer = new XMLSerializer()
@@ -1167,11 +1170,14 @@ class App {
             return;
         }
 
+        let cardWidth = (this.orient == Orient.Portrait) ? 4.9 : 6.9;
+        let cardHeight = (this.orient == Orient.Portrait) ? 6.9 : 4.9;
+
         let svg = this.strokes.getSVG(
             this.canvas.width,
             this.canvas.height,
-            4.9,
-            6.9
+            cardWidth,
+            cardHeight
         )
 
         let serializer = new XMLSerializer()
