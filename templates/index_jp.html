@@ -86,7 +86,15 @@
                                     <span class="icon">
                                         <i class="fa-solid fa-image fa-fw"></i>
                                     </span>
-                                    <span>キャンバスの背景画像</span>
+                                    <span>キャンバスの背景画像を変更する</span>
+                                </button>
+                            </div>
+                            <div class="dropdown-item">
+                                <button id="canvas-orientation" class="button dropdown-item">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-camera-rotate fa-fw"></i>
+                                    </span>
+                                    <span>キャンバスの向きを変更する</span>
                                 </button>
                             </div>
                             {% with errors = get_flashed_messages(category_filter=["error"]) %}

@@ -104,8 +104,6 @@ body {
 }
 
 #canvas {
-    height: 90%;
-    aspect-ratio: 0.70710678118;
     cursor: crosshair;
     background: #ffffff;
     z-index: 3;

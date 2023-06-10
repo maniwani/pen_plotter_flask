@@ -81,12 +81,20 @@
                     <div class="dropdown-menu" id="toolbar-dropdown-menu" role="menu">
                         <div class="dropdown-content">
                             <div class="dropdown-item">
-                                <button id="change-canvas" class="button dropdown-item js-modal-trigger"
+                                <button id="canvas-background" class="button dropdown-item js-modal-trigger"
                                     data-target="background-upload-modal" title="Canvas Background">
                                     <span class="icon">
                                         <i class="fa-solid fa-image fa-fw"></i>
                                     </span>
-                                    <span>Canvas Background</span>
+                                    <span>Change Canvas Background</span>
+                                </button>
+                            </div>
+                            <div class="dropdown-item">
+                                <button id="canvas-orientation" class="button dropdown-item">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-camera-rotate fa-fw"></i>
+                                    </span>
+                                    <span>Change Canvas Orientation</span>
                                 </button>
                             </div>
                             {% with errors = get_flashed_messages(category_filter=["error"]) %}

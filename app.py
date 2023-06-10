@@ -65,13 +65,13 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/en", methods=["POST"])
+@app.route("/en", methods=["GET", "POST"])
 def lang_en():
     session["locale"] = "en"
     return redirect("/")
 
 
-@app.route("/jp", methods=["POST"])
+@app.route("/jp", methods=["GET", "POST"])
 def lang_jp():
     session["locale"] = "ja"
     return redirect("/")

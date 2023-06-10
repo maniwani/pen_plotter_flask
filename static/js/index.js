@@ -598,7 +598,21 @@ class BrushStroke {
         }
     }
 
+    rescale(sx, sy) {
+        const sv = new Vec2(sx, sy)
+        for (let i = 0; i < this.positions.length; i++) {
+            this.positions[i] = this.positions[i].mul(sv)
+        }
+
+        for (let i = 0; i < this.simplePositions.length; i++) {
+            this.simplePositions[i] = this.simplePositions[i].mul(sv)
+        }
+
+        this.finish()
+    }
+
     finish() {
+        this.spline = []
         let positions = this.positions
         let n = positions.length
         if (n == 1) {
@@ -628,6 +642,7 @@ class BrushStroke {
             }
         }
 
+        this.simpleSpline = []
         let simplePositions = this.simplePositions
         n = this.simplePositions.length
         if (n == 1) {
@@ -789,6 +804,13 @@ var Tool
         Tool[(Tool["Draw"] = 3)] = "Draw"
     })(Tool || (Tool = {}))
 
+var Orient
+
+    ; (function (Orient) {
+        Orient[(Orient["Portrait"] = 0)] = "Portrait"
+        Orient[(Orient["Landscape"] = 1)] = "Landscape"
+    })(Orient || (Orient = {}))
+
 class App {
     constructor() {
         // // B6 is 125mm x 176mm
@@ -820,11 +842,7 @@ class App {
         let canvas = document.getElementById("canvas")
         let context = canvas.getContext("2d")
 
-        // make canvas pixel buffer match its on-screen dimensions
-        resizeCanvasToDisplaySize(canvas)
-
         context.strokeStyle = "black"
-        context.lineWidth = canvas.width / 100
         context.lineCap = "round"
         context.lineJoin = "round"
 
@@ -833,6 +851,9 @@ class App {
         this.context = context
         this.transform = new DOMMatrix()
         this.background = new Image()
+        this.orient = Orient.Portrait;
+
+        this.resizeCanvas()
 
         this.tool = Tool.Draw
         this.toolActive = false
@@ -1003,6 +1024,15 @@ class App {
                 this.clearCanvasBackground()
             })
         }
+
+        let orientation = document.getElementById("canvas-orientation")
+        if (orientation) {
+            orientation.addEventListener("click", () => {
+                this.flipCanvasOrientation()
+            })
+        }
+
+        window.addEventListener("resize", () => { this.resizeCanvas() })
     }
 
     setCanvasBackground(file) {
@@ -1024,6 +1054,41 @@ class App {
 
     setCanvasPenColor(color) {
         this.context.strokeStyle = color;
+    }
+
+    flipCanvasOrientation() {
+        this.clear();
+        if (this.orient == Orient.Portrait) {
+            this.orient = Orient.Landscape
+        } else {
+            this.orient = Orient.Portrait
+        }
+        this.resizeCanvas()
+    }
+
+    resizeCanvas() {
+        let canvas = this.canvas;
+
+        // window dimensions
+        let maxWidth = canvas.parentElement.clientWidth;
+        let maxHeight = canvas.parentElement.clientHeight;
+
+        let width = (this.orient == Orient.Portrait) ? 1 : Math.sqrt(2);
+        let height = (this.orient == Orient.Portrait) ? Math.sqrt(2) : 1;
+
+        const scale = Math.min(maxWidth / width, maxHeight / height) * 0.9;
+        width *= scale;
+        height *= scale;
+
+        canvas.style.height = height;
+        canvas.style.width = width;
+        // need to rescale all the points
+        canvas.height = height;
+        canvas.width = width;
+
+        // line width to match decocolor broad tip pen
+        let context = canvas.getContext("2d");
+        context.lineWidth = Math.min(width, height) / 100;
     }
 
     clearCanvas() {
