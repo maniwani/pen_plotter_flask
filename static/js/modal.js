@@ -39,5 +39,20 @@ export function registerModalListeners() {
                 closeAllModals();
             }
         });
+
+        let backgroundUpload = document.getElementById("background-upload")
+        if (backgroundUpload) {
+            backgroundUpload.addEventListener("change", () => {
+                closeAllModals();
+            })
+        }
+
+        let backgroundFileDrop = document.getElementById("background-file-drop")
+        if (backgroundFileDrop) {
+            backgroundFileDrop.addEventListener("drop", () => {
+                closeAllModals();
+            })
+        }
+
     });
 }
