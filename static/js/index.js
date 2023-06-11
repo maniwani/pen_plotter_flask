@@ -842,10 +842,6 @@ class App {
         let canvas = document.getElementById("canvas")
         let context = canvas.getContext("2d")
 
-        context.strokeStyle = "black"
-        context.lineCap = "round"
-        context.lineJoin = "round"
-
         this.pane = pane
         this.canvas = canvas
         this.context = context
@@ -853,6 +849,7 @@ class App {
         this.background = new Image()
         this.orient = Orient.Portrait;
 
+        this.setCanvasPenColor("#000000")
         this.resizeCanvas()
 
         this.tool = Tool.Draw
@@ -1066,7 +1063,19 @@ class App {
         const reader = new FileReader();
         reader.addEventListener("load", () => {
             this.background.src = reader.result;
-        })
+
+            let width = this.background.naturalWidth;
+            let height = this.background.naturalHeight;
+
+            let shouldFlip = false;
+            shouldFlip |= width > height && this.orient == Orient.Portrait;
+            shouldFlip |= height < width && this.orient == Orient.Landscape;
+
+            if (shouldFlip) {
+                this.flipCanvasOrientation();
+            }
+        });
+
 
         reader.readAsDataURL(file);
     }
@@ -1112,6 +1121,8 @@ class App {
         // line width to match decocolor broad tip pen
         let context = canvas.getContext("2d");
         context.lineWidth = Math.min(width, height) / 100;
+        context.lineCap = "round"
+        // context.lineJoin = "round"
     }
 
     clearCanvas() {
