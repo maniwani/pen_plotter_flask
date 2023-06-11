@@ -8,6 +8,7 @@ from flask import (
     flash,
     redirect,
     url_for,
+    request,
     session,
 )
 from flask_login import (
@@ -16,9 +17,11 @@ from flask_login import (
     logout_user,
     current_user,
 )
+from werkzeug.security import check_password_hash
 
 from config import *
 from models import User
+
 
 DISCORD_API_BASE_URL = "https://discord.com/api/"
 DISCORD_API_AUTHORIZE_URL = "https://discord.com/oauth2/authorize"
@@ -33,6 +36,8 @@ STAFF_SERVER_ID = "864267081255616542"
 STAFF_SERVER_STAFF_ROLE_ID = "864276628237713459"
 GUEST_SERVER_ID = "1089761570713772153"
 GUEST_SERVER_GUEST_ROLE_ID = "1089771478154743961"
+
+BASIC_LOGIN_DIGEST = os.environ.get("BASIC_LOGIN_DIGEST")
 
 oauth = OAuth()
 oauth.register(
@@ -66,15 +71,25 @@ def login_backup():
     if current_user.is_authenticated:
         return redirect("/")
 
-    user = User(id=uuid.uuid4())
-    login_user(user)
-
     if session.get("locale") == "ja":
-        msg = "ログインに成功しました！"
+        msgs = [
+            "ログインに成功しました！",
+            "パスワードが正しくない。",
+        ]
     else:
-        msg = "Success!"
+        msgs = ["Success!", "The password you entered was incorrect."]
 
-    flash(msg, "success")
+    username = request.form["username"]
+    password = request.form["password"]
+
+    if check_password_hash(BASIC_LOGIN_DIGEST, password):
+        user = User(id=uuid.uuid4())
+        login_user(user)
+        session["_username"] = username
+        # flash(msgs[0], "success")
+    else:
+        flash(msgs[1], "error")
+
     return redirect("/")
 
 
@@ -88,8 +103,8 @@ def authorize_discord():
 
     if session.get("locale") == "ja":
         msgs = [
-            "ログインに成功しました！",
-            "Discordアカウントには、ログインの権限がありません。",
+            "ログインに成功しました！",  #
+            "Discordアカウントには、ログインの権限がありません。",  #
             "ログインにエラーが発生しました。",
         ]
     else:
@@ -104,9 +119,16 @@ def authorize_discord():
         if is_staff() or is_guest():
             user = User(id=uuid.uuid4())
             login_user(user)
-            user_info = oauth.discord.get(quote_plus("users/@me"))
-            session["_discord_user"] = user_info.json()
-            flash(msgs[0], "success")
+            user_info = oauth.discord.get(quote_plus("users/@me")).json()
+            username = user_info["username"]
+            usercode = user_info["discriminator"]
+            if int(usercode) > 0:
+                session["_username"] = f"{username}#{usercode}"
+            else:
+                session["_username"] = username
+
+            session["_discord_user"] = user_info
+            # flash(msgs[0], "success")
         else:
             flash(msgs[1], "error")
     except:
@@ -119,8 +141,11 @@ def authorize_discord():
 @login_required
 def logout():
     logout_user()
+    if "_username" in session:
+        session.pop("_username")
     if "_discord_user" in session:
         session.pop("_discord_user")
+
     return redirect("/")
 
 

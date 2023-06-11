@@ -80,23 +80,6 @@
                     </div>
                     <div class="dropdown-menu" id="toolbar-dropdown-menu" role="menu">
                         <div class="dropdown-content">
-                            <div class="dropdown-item">
-                                <button id="canvas-background" class="button dropdown-item js-modal-trigger"
-                                    data-target="background-upload-modal" title="Canvas Background">
-                                    <span class="icon">
-                                        <i class="fa-solid fa-image fa-fw"></i>
-                                    </span>
-                                    <span>Change Canvas Background</span>
-                                </button>
-                            </div>
-                            <div class="dropdown-item">
-                                <button id="canvas-orientation" class="button dropdown-item">
-                                    <span class="icon">
-                                        <i class="fa-solid fa-camera-rotate fa-fw"></i>
-                                    </span>
-                                    <span>Change Canvas Orientation</span>
-                                </button>
-                            </div>
                             {% with errors = get_flashed_messages(category_filter=["error"]) %}
                             {% if errors %}
                             <div class="dropdown-item">
@@ -119,33 +102,45 @@
                             </div>
                             {% endif %}
                             {% endwith %}
+                            <div class="dropdown-item">
+                                <button id="canvas-background" class="button dropdown-item js-modal-trigger"
+                                    data-target="background-upload-modal">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-image fa-fw"></i>
+                                    </span>
+                                    <span>Change Canvas Background</span>
+                                </button>
+                            </div>
+                            <div class="dropdown-item">
+                                <button id="canvas-orientation" class="button dropdown-item">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-camera-rotate fa-fw"></i>
+                                    </span>
+                                    <span>Change Canvas Orientation</span>
+                                </button>
+                            </div>
                             <a href="#" class="dropdown-item"></a>
                             <hr class="dropdown-divider">
                             <div class="dropdown-item">
                                 {% if not current_user.is_authenticated %}
                                 <form action="/login/discord" method="POST">
-                                    <button class="button dropdown-item" style="background-color: #5865F2"
-                                        title="Login">
+                                    <button class="button dropdown-item" style="background-color: #5865F2">
                                         <span class="icon">
                                             <i class="fa-brands fa-discord fa-fw" style="color: #FFFFFF;"></i>
                                         </span>
                                         <span style="color: #FFFFFF;">Login with Discord</span>
                                     </button>
                                 </form>
-                                <form action="/login/basic" method="POST">
-                                    <button class="button dropdown-item" style="background-color: #6e6e6e"
-                                        title="Login">
-                                        <span class="icon">
-                                            <i class="fa-solid fa-arrow-right-to-bracket fa-fw"
-                                                style="color: #FFFFFF;"></i>
-                                        </span>
-                                        <span style="color: #FFFFFF;">Login</span>
-                                    </button>
-                                </form>
+                                <button class="button dropdown-item js-modal-trigger" data-target="login-modal"
+                                    style="background-color: #6e6e6e">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-arrow-right-to-bracket fa-fw" style="color: #FFFFFF;"></i>
+                                    </span>
+                                    <span style="color: #FFFFFF;">Login</span>
+                                </button>
                                 {% else %}
                                 <a href="{{ url_for('user.logout') }}">
-                                    <button class="button dropdown-item" style="background-color: #6e6e6e"
-                                        title="Logout">
+                                    <button class="button dropdown-item" style="background-color: #6e6e6e">
                                         <span class="icon">
                                             <i class="fa-solid fa-arrow-right-from-bracket fa-fw"
                                                 style="color: #FFFFFF;"></i>
@@ -215,6 +210,43 @@
             <img src="/static/images/oke_gen2_logo_horizontal.png" />
         </div>
 
+        <div id="login-modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Login</p>
+                    <button class="delete" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body">
+                    <form id="login-form" action="/login/basic" method="POST">
+                        <div class="field">
+                            <p class="control has-icons-left">
+                                <input class="input" type="text" name="username" placeholder="Username" required>
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-user fa-fw"></i>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="field">
+                            <p class="control has-icons-left">
+                                <input class="input" type="password" name="password" placeholder="Password" required>
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                            </p>
+                        </div>
+                    </form>
+                </section>
+                <footer class="modal-card-foot">
+                    <div class="field">
+                        <p class="control">
+                            <button id="login-form-submit" form="login-form" class="button is-success">Login</button>
+                        </p>
+                    </div>
+                </footer>
+            </div>
+        </div>
+
         <div id="print-modal" class="modal">
             <div class="modal-background"></div>
             <div class="modal-card">
@@ -226,9 +258,9 @@
                     Ready to print?
                 </section>
                 <footer class="modal-card-foot">
-                    <button id="print-confirm" class="button is-success">Yes</button>
-                    <button id="print-cancel" class="button">No</button>
-                    <button id="download" class="button is-info">Download</button>
+                    <button id="print-confirm" class="button is-success auto-close">Yes</button>
+                    <button id="print-cancel" class="button auto-close">No</button>
+                    <button id="download" class="button is-info auto-close">Download SVG</button>
                 </footer>
             </div>
         </div>
