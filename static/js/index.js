@@ -1032,6 +1032,29 @@ class App {
             })
         }
 
+        // CTRL+Z, SHIFT+CTRL+Z, CTRL+Y
+        document.addEventListener("keydown", (e) => {
+            if (this.toolActive) {
+                return;
+            }
+
+            if (e.metaKey || e.ctrlKey) {
+                if (e.key == "z" || e.key == "Z") {
+                    e.preventDefault();
+                    if (e.shiftKey) {
+                        this.strokes.redoStroke()
+                    } else {
+                        this.strokes.undoStroke()
+                    }
+                } else if (e.key == "y" || e.key == "Y") {
+                    if (!e.shiftKey) {
+                        e.preventDefault()
+                        this.strokes.redoStroke()
+                    }
+                }
+            }
+        });
+
         window.addEventListener("resize", () => { this.resizeCanvas() })
     }
 
