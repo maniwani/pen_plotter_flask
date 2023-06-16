@@ -1029,6 +1029,19 @@ class App {
             })
         }
 
+        this.background.addEventListener("load", () => {
+            let width = this.background.naturalWidth;
+            let height = this.background.naturalHeight;
+
+            let shouldFlip = false;
+            shouldFlip |= width > height && this.orient == Orient.Portrait;
+            shouldFlip |= width < height && this.orient == Orient.Landscape;
+
+            if (shouldFlip) {
+                this.flipCanvasOrientation();
+            }
+        });
+
         // CTRL+Z, SHIFT+CTRL+Z, CTRL+Y
         document.addEventListener("keydown", (e) => {
             if (this.toolActive) {
@@ -1063,17 +1076,6 @@ class App {
         const reader = new FileReader();
         reader.addEventListener("load", () => {
             this.background.src = reader.result;
-
-            let width = this.background.naturalWidth;
-            let height = this.background.naturalHeight;
-
-            let shouldFlip = false;
-            shouldFlip |= width > height && this.orient == Orient.Portrait;
-            shouldFlip |= height < width && this.orient == Orient.Landscape;
-
-            if (shouldFlip) {
-                this.flipCanvasOrientation();
-            }
         });
 
 
@@ -1122,7 +1124,7 @@ class App {
         let context = canvas.getContext("2d");
         context.lineWidth = Math.min(width, height) / 100;
         context.lineCap = "round"
-        // context.lineJoin = "round"
+        context.lineJoin = "round"
     }
 
     clearCanvas() {
