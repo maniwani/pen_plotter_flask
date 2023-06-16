@@ -833,11 +833,6 @@ class App {
         // ctx.lineCap = 'round';
         // ctx.lineJoin = 'round';
 
-        this.socket = io.connect();
-        this.socket.on("connect", () => {
-            this.socket.emit("join", { "room": "guests" })
-        });
-
         let pane = document.getElementById("pane")
         let canvas = document.getElementById("canvas")
         let context = canvas.getContext("2d")
@@ -1195,6 +1190,13 @@ class App {
             cardWidth,
             cardHeight
         )
+
+        if (this.socket.connected) {
+            this.socket = io.connect();
+            this.socket.on("connect", () => {
+                this.socket.emit("join", { "room": "guests" })
+            });
+        }
 
         let serializer = new XMLSerializer()
         let content = serializer.serializeToString(svg)
