@@ -32,10 +32,12 @@ DISCORD_CLIENT_ID = os.environ.get("DISCORD_CLIENT_ID")
 DISCORD_CLIENT_SECRET = os.environ.get("DISCORD_CLIENT_SECRET")
 DISCORD_CLIENT_OAUTH2_SCOPES = "identify guilds.members.read"
 
-STAFF_SERVER_ID = "864267081255616542"
-STAFF_SERVER_STAFF_ROLE_ID = "864276628237713459"
-GUEST_SERVER_ID = "1089761570713772153"
-GUEST_SERVER_GUEST_ROLE_ID = "1089771478154743961"
+# (server id, role id)
+DISCORD_SERVER_WHITELIST = [
+    ("864267081255616542", "864276628237713459"),
+    ("1089761570713772153", "1089771478154743961"),
+    ("1114660019212910622", None)
+]
 
 BASIC_LOGIN_DIGEST = os.environ.get("BASIC_LOGIN_DIGEST")
 
@@ -116,7 +118,7 @@ def authorize_discord():
 
     try:
         oauth.discord.authorize_access_token()
-        if is_staff() or is_guest():
+        if is_authorized_user():
             user = User(id=uuid.uuid4())
             login_user(user)
             user_info = oauth.discord.get(quote_plus("users/@me")).json()
@@ -138,30 +140,30 @@ def authorize_discord():
 
 
 @user.route("/logout")
-@login_required
 def logout():
-    logout_user()
-    if "_username" in session:
-        session.pop("_username")
-    if "_discord_user" in session:
-        session.pop("_discord_user")
+    if current_user.is_authenticated:
+        logout_user()
+        if "_username" in session:
+            session.pop("_username")
+        if "_discord_user" in session:
+            session.pop("_discord_user")
 
     return redirect("/")
 
 
-def is_staff():
-    return has_server_role(STAFF_SERVER_ID, STAFF_SERVER_STAFF_ROLE_ID)
-
-
-def is_guest():
-    return has_server_role(GUEST_SERVER_ID, GUEST_SERVER_GUEST_ROLE_ID)
+def is_authorized_user():
+    return any(has_server_role(sid, rid) for (sid, rid) in DISCORD_SERVER_WHITELIST)
 
 
 def has_server_role(server_id, role_id):
     resp = oauth.discord.get(quote_plus(f"users/@me/guilds/{server_id}/member"))
     if resp.ok:
+        if role_id is None:
+            return True
+
         member = resp.json()
         for role in member["roles"]:
             if role == role_id:
                 return True
+
     return False
