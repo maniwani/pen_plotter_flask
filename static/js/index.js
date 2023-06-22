@@ -1,4 +1,5 @@
 import { registerModalListeners } from "../js/modal.js"
+import { nanoid } from "../js/nanoid.js"
 
 function ease(x) {
     return 1 - Math.sqrt(1 - x * x)
@@ -1221,8 +1222,8 @@ class App {
         let serializer = new XMLSerializer()
         let content = serializer.serializeToString(svg)
 
-        let date = new Date();
-        let filename = `autograph_${date.toISOString()}.svg`.replace(/:/g, "_")
+        let random = nanoid(14);
+        let filename = `autograph_${random}.svg`.replace(/:/g, "_")
         download(content, "image/svg+xml;charset=utf-8", filename)
     }
 
