@@ -4,7 +4,7 @@ import mimetypes
 import os
 import secrets
 
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, session
 from flask_login import LoginManager, current_user
 from flask_socketio import SocketIO, disconnect, emit, join_room, leave_room
 from werkzeug.middleware.proxy_fix import ProxyFix
@@ -24,6 +24,12 @@ def authenticated_only(f):
 
     return wrapped
 
+def get_locale():
+    if "locale" not in session:
+        session["locale"] = request.accept_languages.best_match({"en", "ja"})
+
+    return session["locale"]
+
 
 # Windows registry can get this messed up, so overriding here
 mimetypes.add_type("application/javascript", ".js")
@@ -36,6 +42,8 @@ app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_host=1)
 app.config["SECRET_KEY"] = secrets.token_urlsafe(16)
 app.register_blueprint(user)
+
+app.jinja_env.globals["get_locale"] = get_locale
 
 oauth.init_app(app)
 
@@ -55,6 +63,18 @@ def load_user(id):
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/en", methods=["GET", "POST"])
+def lang_en():
+    session["locale"] = "en"
+    return redirect("/")
+
+
+@app.route("/jp", methods=["GET", "POST"])
+def lang_jp():
+    session["locale"] = "ja"
+    return redirect("/")
 
 
 @socket.on("connect")

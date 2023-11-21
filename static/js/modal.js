@@ -25,7 +25,7 @@ export function registerModalListeners() {
         });
 
         // Add a click event on various child elements to close the parent modal.
-        (document.querySelectorAll(".modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .button") || []).forEach((close) => {
+        (document.querySelectorAll(".modal-background, .modal-close, .modal-card-head .delete, .modal-card-foot .auto-close") || []).forEach((close) => {
             const target = close.closest(".modal");
             close.addEventListener("click", () => {
                 closeModal(target);
@@ -39,5 +39,20 @@ export function registerModalListeners() {
                 closeAllModals();
             }
         });
+
+        let backgroundUpload = document.getElementById("background-upload")
+        if (backgroundUpload) {
+            backgroundUpload.addEventListener("change", () => {
+                closeAllModals();
+            })
+        }
+
+        let backgroundFileDrop = document.getElementById("background-file-drop")
+        if (backgroundFileDrop) {
+            backgroundFileDrop.addEventListener("drop", () => {
+                closeAllModals();
+            })
+        }
+
     });
 }

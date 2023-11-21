@@ -1,0 +1,296 @@
+<section class>
+    <div id="grid">
+        <div id="corner-piece"></div>
+        <div id="toolbar">
+            <div id="toolbar-section-1">
+            </div>
+            <div id="toolbar-section-2">
+                <button id="undo" class="button tbtn" title="Undo">
+                    <span class="icon">
+                        <i class="fas fa-arrow-left fa-fw"></i>
+                    </span>
+                    <span>Undo</span>
+                </button>
+                <button id="redo" class="button tbtn" title="Redo">
+                    <span class="icon">
+                        <i class="fas fa-arrow-right fa-fw"></i>
+                    </span>
+                    <span>Redo</span>
+                </button>
+                {% if not current_user.is_authenticated %}
+                <button id="print-dialog-disabled" class="button tbtn is-static" title="Print" disabled>
+                    <span class="icon">
+                        <i class="fas fa-print fa-fw"></i>
+                    </span>
+                    <span>Print</span>
+                </button>
+                {% else %}
+                <button id="print-dialog" class="button tbtn js-modal-trigger" data-target="print-modal" title="Print">
+                    <span class="icon">
+                        <i class="fas fa-print fa-fw"></i>
+                    </span>
+                    <span>Print</span>
+                </button>
+                {% endif %}
+                <button id="clear" class="button" title="Clear">
+                    <span class="icon">
+                        <i class="fa-solid fa-trash fa-fw"></i>
+                    </span>
+                    <span>Clear</span>
+                </button>
+            </div>
+            <div id="toolbar-section-3">
+                <div class="dropdown is-right is-hoverable">
+                    <div class="dropdown-trigger">
+                        <button class="button" aria-haspopup="true" aria-controls="toolbar-dropdown-menu">
+                            <span>{{ get_locale() }}</span>
+                            <span class="icon is-small">
+                                <i class="fas fa-angle-down fa-fw" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu" id="toolbar-dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            <div class="dropdown-item">
+                                <form action="/en" method="POST">
+                                    <button id="switch-lang-en" class="button dropdown-item">
+                                        <span>English</span>
+                                    </button>
+                                </form>
+                                <form action="/jp" method="POST">
+                                    <button id="switch-lang-jp" class="button dropdown-item">
+                                        <span>日本語</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="dropdown is-right is-hoverable">
+                    <div class="dropdown-trigger">
+                        <button class="button" aria-haspopup="true" aria-controls="toolbar-dropdown-menu">
+                            <span class="icon is-small">
+                                <i class="fa-solid fa-bars fa-fw"></i>
+                            </span>
+                            <span>Menu</span>
+                            <span class="icon is-small">
+                                <i class="fas fa-angle-down fa-fw" aria-hidden="true"></i>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="dropdown-menu" id="toolbar-dropdown-menu" role="menu">
+                        <div class="dropdown-content">
+                            {% with errors = get_flashed_messages(category_filter=["error"]) %}
+                            {% if errors %}
+                            <div class="dropdown-item">
+                                <div class="notification is-danger">
+                                    <span>
+                                        {{ errors[0] }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endwith %}
+                            {% with messages = get_flashed_messages(category_filter=["success"]) %}
+                            {% if messages %}
+                            <div class="dropdown-item">
+                                <div class="notification is-success">
+                                    <span>
+                                        {{ messages[0] }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endwith %}
+                            <div class="dropdown-item">
+                                <button id="canvas-background" class="button dropdown-item js-modal-trigger"
+                                    data-target="background-upload-modal">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-image fa-fw"></i>
+                                    </span>
+                                    <span>Change Canvas Background</span>
+                                </button>
+                            </div>
+                            <div class="dropdown-item">
+                                <button id="canvas-orientation" class="button dropdown-item">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-camera-rotate fa-fw"></i>
+                                    </span>
+                                    <span>Change Canvas Orientation</span>
+                                </button>
+                            </div>
+                            <a href="#" class="dropdown-item"></a>
+                            <hr class="dropdown-divider">
+                            <div class="dropdown-item">
+                                {% if not current_user.is_authenticated %}
+                                <form action="/login/discord" method="POST">
+                                    <button class="button dropdown-item" style="background-color: #5865F2">
+                                        <span class="icon">
+                                            <i class="fa-brands fa-discord fa-fw" style="color: #FFFFFF;"></i>
+                                        </span>
+                                        <span style="color: #FFFFFF;">Login with Discord</span>
+                                    </button>
+                                </form>
+                                <button class="button dropdown-item js-modal-trigger" data-target="login-modal"
+                                    style="background-color: #6e6e6e">
+                                    <span class="icon">
+                                        <i class="fa-solid fa-arrow-right-to-bracket fa-fw" style="color: #FFFFFF;"></i>
+                                    </span>
+                                    <span style="color: #FFFFFF;">Login</span>
+                                </button>
+                                {% else %}
+                                <a href="{{ url_for('user.logout') }}">
+                                    <button class="button dropdown-item" style="background-color: #6e6e6e">
+                                        <span class="icon">
+                                            <i class="fa-solid fa-arrow-right-from-bracket fa-fw"
+                                                style="color: #FFFFFF;"></i>
+                                        </span>
+                                        <span style="color: #FFFFFF;">Logout</span>
+                                    </button>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="sidebar">
+            <button id="draw" class="button tbtn" title="Pen">
+                <span class="icon">
+                    <i class="fas fa-pen fa-fw"></i>
+                </span>
+            </button>
+            <button id="set-color-black" class="button tbtn" title="Black Pen">
+                <span class="icon">
+                    <i class="fas fa-circle" style="color: #000000;"></i>
+                </span>
+            </button>
+            <button id="set-color-silver" class="button tbtn" title="Silver Pen">
+                <span class="icon">
+                    <i class="fas fa-circle" style="color: #bebcbf;"></i>
+                </span>
+            </button>
+            <button id="set-color-gold" class="button tbtn" title="Gold Pen">
+                <span class="icon">
+                    <i class="fas fa-circle" style="color: #b89865;"></i>
+                </span>
+            </button>
+            <!-- <button id="home" class="button tbtn" title="Canvas Home">
+                <span class="icon">
+                    <i class="fas fa-home fa-fw"></i>
+                </span>
+            </button>
+            <button id="move" class="button tbtn" title="Canvas Move" disabled>
+                <span class="icon">
+                    <i class="fas fa-arrows fa-fw"></i>
+                </span>
+            </button>
+            <button id="rotate" class="button tbtn" title="Canvas Rotate" disabled>
+                <span class="icon">
+                    <i class="fas fa-sync-alt fa-fw"></i>
+                </span>
+            </button>
+            <button id="zoom" class="button tbtn" title="Canvas Zoom" disabled>
+                <span class="icon">
+                    <i class="fas fa-search fa-fw"></i>
+                </span>
+            </button> -->
+        </div>
+
+        <div id="background">
+        </div>
+
+        <div id="window">
+            <canvas id="canvas"></canvas>
+        </div>
+
+        <div id="watermark">
+            <img src="/static/images/oke_gen2_logo_horizontal.png" />
+        </div>
+
+        <div id="login-modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Login</p>
+                    <button class="delete" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body">
+                    <form id="login-form" action="/login/basic" method="POST">
+                        <div class="field">
+                            <p class="control has-icons-left">
+                                <input class="input" type="text" name="username" placeholder="Username" required>
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-user fa-fw"></i>
+                                </span>
+                            </p>
+                        </div>
+                        <div class="field">
+                            <p class="control has-icons-left">
+                                <input class="input" type="password" name="password" placeholder="Password" required>
+                                <span class="icon is-small is-left">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                            </p>
+                        </div>
+                    </form>
+                </section>
+                <footer class="modal-card-foot">
+                    <div class="field">
+                        <p class="control">
+                            <button id="login-form-submit" form="login-form" class="button is-success">Login</button>
+                        </p>
+                    </div>
+                </footer>
+            </div>
+        </div>
+
+        <div id="print-modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Confirm</p>
+                    <button class="delete" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body">
+                    Ready to print?
+                </section>
+                <footer class="modal-card-foot">
+                    <button id="print-confirm" class="button is-success auto-close">Yes</button>
+                    <button id="print-cancel" class="button auto-close">No</button>
+                    <button id="download" class="button is-info auto-close">Download SVG</button>
+                </footer>
+            </div>
+        </div>
+
+        <div id="background-upload-modal" class="modal">
+            <div class="modal-background"></div>
+            <div class="modal-card">
+                <header class="modal-card-head">
+                    <p class="modal-card-title">Change Canvas Background</p>
+                    <button class="delete" aria-label="close"></button>
+                </header>
+                <section class="modal-card-body">
+                    <div id="background-file-drop">
+                        <span class="icon">
+                            <i class="fa-solid fa-arrow-up-from-bracket fa-4x"></i>
+                        </span>
+                        <h4></h4>
+                        <span>
+                            <p>
+                                <b>Click to choose a file</b> or drag and drop one here.
+                            </p>
+                        </span>
+                        <input id="background-upload" class="file-input" type="file" accept="image/*" />
+                    </div>
+                </section>
+                <footer class="modal-card-foot">
+                    <button id="background-remove" class="button">Remove Background</button>
+                </footer>
+            </div>
+        </div>
+
+    </div>
+</section>
